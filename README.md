@@ -1,4 +1,4 @@
-# Google News Scraper
+# Summarize Recent Google News 
 
 1. Scrape google news search page.
 2. Open each article page and get content.
