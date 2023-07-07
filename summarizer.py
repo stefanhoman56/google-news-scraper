@@ -4,6 +4,9 @@ from google_news import GoogleNews
 import openai
 
 class GoogleNewsSummarizer:
+    def __init__(self, summary_token_count) -> None:
+        self.summary_word_count = summary_token_count
+
     def get_soup(self, url):
         headers = { 'User-Agent': 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_8; en-US) AppleWebKit/534.1 (KHTML, like Gecko) Chrome/6.0.422.0 Safari/534.1' }
         cookies = { 'CONSENT':'YES+cb.20230705-17-p0.it+FX+917; ' }
@@ -81,28 +84,35 @@ class GoogleNewsSummarizer:
         result = gn.search(keywords)
         return result['entries'][:count]
     
-    def get_summary(self, content):
-        prompt = 'Write summary less than 500 words: \n\n' + content
-
+    def call_openai(self, prompt):
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "system", "content": prompt}],
-            max_tokens=1000,
+            max_tokens=(self.summary_word_count * 3) // 2,
             temperature=0.3,
         )
 
         result = completion["choices"][0]["message"]["content"]
-
         return result
 
+    def get_summary(self, content):
+        limit = self.summary_word_count * 5
+        unit_length = 8000
+        while len(content) > limit:
+            prompt = f'Write summary less than {self.summary_word_count} words: \n\n' + content[:unit_length]
+            content = self.call_openai(prompt) + '\n\n' + content[unit_length:]
+        return content
+
     def run(self, keywords, count):
-        articles = self.get_article_content(keywords, count)
+        articles = self.search_articles(keywords, count)
         result = []
-        for article in articles:
+        for index, article in enumerate(articles):
             original_link = self.get_original_article_link(article['link'])
             content = self.get_article_content(original_link)
+            print("summary length is ", len(content))
             summary = self.get_summary(content)
             result.append({
                 'title': article['title'],
                 'summary': summary
             })
+        return result
