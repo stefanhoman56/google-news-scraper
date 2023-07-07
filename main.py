@@ -1,4 +1,4 @@
-from .summarizer import GoogleNewsSummarizer
+from summarizer import GoogleNewsSummarizer
 import openai
 import json
 

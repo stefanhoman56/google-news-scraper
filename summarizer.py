@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from .google_news import GoogleNews
+from google_news import GoogleNews
 import openai
 
 class GoogleNewsSummarizer:
