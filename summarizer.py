@@ -85,6 +85,7 @@ class GoogleNewsSummarizer:
         return result['entries'][:count]
     
     def call_openai(self, prompt):
+        print("Prompt length is", len(prompt))
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "system", "content": prompt}],
@@ -110,8 +111,7 @@ class GoogleNewsSummarizer:
             original_link = self.get_original_article_link(article['link'])
             content = self.get_article_content(original_link)
             print("summary length is ", len(content))
-            # summary = self.get_summary(content)
-            summary = content
+            summary = self.get_summary(content)
             result.append({
                 'title': article['title'],
                 'summary': summary
