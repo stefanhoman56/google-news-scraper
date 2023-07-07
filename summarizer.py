@@ -110,7 +110,8 @@ class GoogleNewsSummarizer:
             original_link = self.get_original_article_link(article['link'])
             content = self.get_article_content(original_link)
             print("summary length is ", len(content))
-            summary = self.get_summary(content)
+            # summary = self.get_summary(content)
+            summary = content
             result.append({
                 'title': article['title'],
                 'summary': summary
